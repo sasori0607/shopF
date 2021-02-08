@@ -2,14 +2,31 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from PIL import Image
+from django.urls import reverse
+
+
+def get_product_url(obj, viewname, model_name):
+    return reverse(viewname, )
+
 
 
 User = get_user_model()
 
 
+class MinResolutionErrorException(Exception):
+    pass
+
+
+class MaxResolutionErrorException(Exception):
+    pass
+
+
 class LatesProductsManager:
 
-    def get_products_for_main_page(self, *args, **kwargs):
+    @staticmethod
+    def get_products_for_main_page(*args, **kwargs):
+
         products = []
         ct_models = ContentType.objects.filter(models_in=args)
         for ct_model in ct_models:
@@ -20,7 +37,7 @@ class LatesProductsManager:
 
 class LatestProducts:
 
-    object = None
+    object = LatesProductsManager
 
 
 class Category(models.Model):
@@ -34,18 +51,33 @@ class Category(models.Model):
 
 class Product(models.Model):
 
+    MIN_RESOLUTION = (300, 300)
+    MAX_RESOLUTION = (800, 800)
+    MAX_IMAGE_SIZE = 355555
+
     class Meta:
         abstract = True
 
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     title = models.CharField(max_length=255, verbose_name='Наименование')
     slug = models.SlugField(unique=True)
-    image = models.ImageField(verbose_name='Изображение')
+    image = models.ImageField(verbose_name='Изображение',)
     description = models.TextField(verbose_name='Описание', null=True)
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        image = self.image
+        img = Image.open(image)
+        min_height, min_width = Product.MIN_RESOLUTION
+        max_height, max_width = self.MIN_RESOLUTION
+        if img.height < min_height or img.width < min_width:
+            raise MinResolutionErrorException('Слишком маленькое изображение ')
+        if img.height > max_height or img.width > max_width:
+            raise MaxResolutionErrorException('Слишком большое изображение ')
+        super().save(*args, **kwargs)
 
 
 class Notebook(Product):
