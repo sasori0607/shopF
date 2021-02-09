@@ -6,8 +6,9 @@ from PIL import Image
 from django.urls import reverse
 
 
-def get_product_url(obj, viewname, model_name):
-    return reverse(viewname, )
+def get_product_url(obj, viewname):
+    ct_model = obj.category  #obj.__class__._meta.model_name
+    return reverse(viewname, kwargs={'ct_model': ct_model, 'slug': obj.slug})
 
 
 
@@ -92,6 +93,9 @@ class Notebook(Product):
     def __str__(self):
         return "{} : {}".format(self.category, self.title)
 
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail.html')
+
 
 class Smartphone(Product):
 
@@ -107,6 +111,9 @@ class Smartphone(Product):
 
     def __str__(self):
         return "{} : {}".format(self.category, self.title)
+
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail.html')
 
 
 class CartProduct(models.Model):
