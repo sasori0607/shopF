@@ -5,7 +5,22 @@ from PIL import Image
 from django.utils.safestring import mark_safe
 
 
-class NotebookAdminForm(ModelForm):
+class SmartphoneAdminForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if not instance.sd:
+            self.fields['sd_volume_max'].widget.attrs.update({
+                'readonly': True, 'style': 'background: lightgray'
+            })
+
+    def clean(self):
+        if not self.cleaned_data['sd']:
+            self.cleaned_data['sd_volume_max'] = None
+            return self.cleaned_data
+
+class sizeAdminForm(ModelForm):
 
     MIN_RESOLUTION = (300, 300)
     MAX_RESOLUTION = (800, 800)
@@ -30,14 +45,20 @@ class NotebookAdminForm(ModelForm):
 
 
 
-class adminT(admin.ModelAdmin):
-    form = NotebookAdminForm
+class adminNotebook(admin.ModelAdmin):
+    form = sizeAdminForm
+
+
+class adminSmartphone(admin.ModelAdmin):
+    change_form_template = 'admin.html'
+    form = sizeAdminForm
+    form1 = SmartphoneAdminForm
 
 
 
 admin.site.register(Category)
-admin.site.register(Notebook)
-admin.site.register(Smartphone, adminT)
+admin.site.register(Notebook, adminNotebook)
+admin.site.register(Smartphone, adminSmartphone)
 admin.site.register(CartProduct)
 admin.site.register(Cart)
 admin.site.register(Customer)

@@ -1,0 +1,46 @@
+<body>
+    <table class="table">
+      <tbody>
+
+        <tr>
+          <td>Диагональ</td>
+          <td>{{ product.diagonal }}</td>
+        </tr>
+       <tr>
+          <td>Тип дисплея</td>
+          <td>{{ product.display_type }}</td>
+       </tr>
+      <tr>
+          <td>Разрешения экрана</td>
+          <td>{{ product.resolution }}</td>
+      </tr>
+      <tr>
+          <td>Объем памяти</td>
+          <td>{{ product.accum_volume }}</td>
+      </tr>
+      <tr>
+          <td>Оперативная память</td>
+          <td>{{ product.ram }}</td>
+      </tr>
+      <tr>
+          <td>SD</td>
+          <td>{{ product.sd }}</td>
+      </tr>
+      <tr>
+          <td>Макс обьем встр памяти</td>
+          <td>{{ product.sd_volume_max }}</td>
+      </tr>
+      <tr>
+          <td>Главная камера</td>
+          <td>{{ product.main_cam_mp }}</td>
+      </tr>
+      <tr>
+          <td>{{ product.front_cam_mp.get_FIELDNAME_display }}</td>
+          <td>{{ product.front_cam_mp }}</td>
+      </tr>
+
+
+      </tbody>
+    </table>
+</body>
+
